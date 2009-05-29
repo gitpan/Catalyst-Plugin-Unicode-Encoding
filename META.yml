@@ -1,20 +1,28 @@
 ---
-name: Catalyst-Plugin-Unicode-Encoding
-version: 0.2
+abstract: 'Unicode aware Catalyst'
 author:
   - 'Christian Hansen, C<ch@ngmedia.com>'
-abstract: Unicode aware Catalyst
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+  Test::WWW::Mechanize::Catalyst: 0.51
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
+distribution_type: module
+generated_by: 'Module::Install version 0.87'
 license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+module_name: Catalyst::Plugin::Unicode::Encoding
+name: Catalyst-Plugin-Unicode-Encoding
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Catalyst: 5.8
+  Encode: 2.21
 resources:
   license: http://dev.perl.org/licenses/
-requires:
-  Catalyst: 5.2
-  Encode: 2.1
-provides:
-  Catalyst::Plugin::Unicode::Encoding:
-    file: lib/Catalyst/Plugin/Unicode/Encoding.pm
-    version: 0.2
-generated_by: Module::Build version 0.3
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  repository: http://dev.catalyst.perl.org/repos/Catalyst/trunk/Catalyst-Plugin-Unicode-Encoding/
+version: 0.3
