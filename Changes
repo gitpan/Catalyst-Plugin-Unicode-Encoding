@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Plugin::Unicode::Encoding
 
+0.7 2009-12-21 21:30:12
+        - Make Test::WWW::Mechanize::Catalyst an optional dependency.
+
 0.6 2009-11-16 20:45:43
         - Fix missing dependency for the tests.
         - Avoid LWP releases which break the tests by messing up unicode.
