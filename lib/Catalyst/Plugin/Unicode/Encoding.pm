@@ -7,7 +7,7 @@ use Carp ();
 use Encode 2.21 ();
 
 use MRO::Compat;
-our $VERSION = '0.8';
+our $VERSION = '0.9';
 our $CHECK   = Encode::FB_CROAK | Encode::LEAVE_SRC;
 
 __PACKAGE__->mk_classdata('_encoding');
@@ -103,6 +103,20 @@ sub prepare_uploads {
     }
 }
 
+sub prepare_action {
+    my $c = shift;
+
+    my $ret = $c->next::method(@_);
+
+    my $enc = $c->encoding;
+
+    foreach (@{$c->req->arguments}) {
+        $_ = Encode::is_utf8( $_ ) ? $_ : $enc->decode( $_, $CHECK );
+    }
+
+    return $ret;
+}
+
 sub setup {
     my $self = shift;
 
@@ -141,7 +155,7 @@ logical characters. On response, encodes body into encoding.
 
 =item encoding
 
-Returns a instance of a C<Encode> encoding
+Returns an instance of an C<Encode> encoding
 
     print $c->encoding->name
 
@@ -159,6 +173,10 @@ Encodes body into encoding.
 
 Decodes parameters, query_parameters, body_parameters and filenames
 in file uploads into a sequence of logical characters.
+
+=item prepare_action
+
+Decodes request arguments (i.e. C<< $c->request->arguments >>).
 
 =item setup
 

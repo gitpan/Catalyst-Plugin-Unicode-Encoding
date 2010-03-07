@@ -12,7 +12,7 @@ DESCRIPTION
 
 METHODS
     encoding
-        Returns a instance of a "Encode" encoding
+        Returns an instance of an "Encode" encoding
 
             print $c->encoding->name
 
@@ -23,6 +23,9 @@ OVERLOADED METHODS
     prepare_uploads
         Decodes parameters, query_parameters, body_parameters and filenames
         in file uploads into a sequence of logical characters.
+
+    prepare_action
+        Decodes request arguments (i.e. "$c->request->arguments").
 
     setup
         Setups "$c->encoding" with encoding specified in
