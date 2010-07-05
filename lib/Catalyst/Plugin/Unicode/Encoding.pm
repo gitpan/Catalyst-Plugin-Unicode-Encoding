@@ -7,7 +7,7 @@ use Carp ();
 use Encode 2.21 ();
 
 use MRO::Compat;
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 our $CHECK   = Encode::FB_CROAK | Encode::LEAVE_SRC;
 
 __PACKAGE__->mk_classdata('_encoding');
@@ -35,7 +35,7 @@ sub encoding {
     return $encoding;
 }
 
-sub finalize {
+sub finalize_headers {
     my $c = shift;
 
     my $body = $c->response->body;
@@ -165,7 +165,7 @@ Returns an instance of an C<Encode> encoding
 
 =over
 
-=item finalize
+=item finalize_headers
 
 Encodes body into encoding.
 
@@ -176,7 +176,8 @@ in file uploads into a sequence of logical characters.
 
 =item prepare_action
 
-Decodes request arguments (i.e. C<< $c->request->arguments >>).
+Decodes request arguments (i.e. C<< $c->request->arguments >>) and
+captures (i.e. C<< $c->request->captures >>).
 
 =item setup
 

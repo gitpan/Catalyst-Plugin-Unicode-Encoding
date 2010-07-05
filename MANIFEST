@@ -1,12 +1,10 @@
 Changes
-inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorRequires.pm
-inc/Module/Install/AutoInstall.pm
+inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
-inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
@@ -17,10 +15,10 @@ MANIFEST			This list of files
 META.yml
 README
 t/01use.t
-t/02pod.t
-t/03podcoverage.t
 t/04live.t
 t/05config.t
 t/06request_decode.t
+t/author/02pod.t
+t/author/03podcoverage.t
 t/lib/TestApp.pm
 t/lib/TestApp/Controller/Root.pm
