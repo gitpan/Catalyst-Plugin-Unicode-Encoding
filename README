@@ -32,6 +32,30 @@ OVERLOADED METHODS
         Setups "$c->encoding" with encoding specified in
         "$c->config->{encoding}".
 
+    handle_unicode_encoding_exception ($exception_context)
+        Method called when decoding process for a request fails.
+
+        An $exception_context hashref is provided to allow you to override
+        the behaviour of your application when given data with incorrect
+        encodings.
+
+        The default method throws exceptions in the case of invalid request
+        parameters (resulting in a 500 error), but ignores errors in upload
+        filenames.
+
+        The keys passed in the $exception_context hash are:
+
+        param_value
+            The value which was not able to be decoded.
+
+        error_msg
+            The exception recieved from Encode.
+
+        encoding_step
+            What type of data was being decoded. Valid values are
+            (currently) "params" - for request parameters / arguments /
+            captures and "uploads" - for request upload filenames.
+
 SEE ALSO
     Encode, Encode::Encoding, Catalyst::Plugin::Unicode, Catalyst.
 

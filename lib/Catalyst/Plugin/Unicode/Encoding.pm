@@ -4,11 +4,13 @@ use strict;
 use base 'Class::Data::Inheritable';
 
 use Carp ();
-use Encode 2.21 ();
-
 use MRO::Compat;
-our $VERSION = '1.1';
-our $CHECK   = Encode::FB_CROAK | Encode::LEAVE_SRC;
+use Try::Tiny;
+
+use Encode 2.21 ();
+our $CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC;
+
+our $VERSION = '1.2';
 
 __PACKAGE__->mk_classdata('_encoding');
 
@@ -23,12 +25,12 @@ sub encoding {
               or Carp::croak( qq/Unknown encoding '$wanted'/ );
         }
 
-        $encoding = ref $c 
+        $encoding = ref $c
                   ? $c->{encoding} = $encoding
                   : $c->_encoding($encoding);
     } else {
-      $encoding = ref $c && exists $c->{encoding} 
-                ? $c->{encoding} 
+      $encoding = ref $c && exists $c->{encoding}
+                ? $c->{encoding}
                 : $c->_encoding;
     }
 
@@ -45,7 +47,7 @@ sub finalize_headers {
 
     my $enc = $c->encoding;
 
-    return $c->next::method(@_) 
+    return $c->next::method(@_)
       unless $enc;
 
     my ($ct, $ct_enc) = $c->response->content_type;
@@ -93,13 +95,22 @@ sub prepare_uploads {
                 #      this avoids exception if we have already decoded content, and is _not_ the
                 #      same as not encoding on output which is bad news (as it does the wrong thing
                 #      for latin1 chars for example)..
-                $_ = Encode::is_utf8( $_ ) ? $_ : $enc->decode( $_, $CHECK );
+                $_ = $c->_handle_param_unicode_decoding($_);
             }
         }
     }
     for my $value ( values %{ $c->request->uploads } ) {
-        $_->{filename} = $enc->decode( $_->{filename}, $CHECK )
-            for ( ref($value) eq 'ARRAY' ? @{$value} : $value );
+        # skip if it fails for uploads, as we don't usually want uploads touched
+        # in any way
+        $_->{filename} = try {
+        $enc->decode( $_->{filename}, $CHECK )
+    } catch {
+        $c->handle_unicode_encoding_exception({
+            param_value => $_->{filename},
+            error_msg => $_,
+            encoding_step => 'uploads',
+        });
+    } for ( ref($value) eq 'ARRAY' ? @{$value} : $value );
     }
 }
 
@@ -108,10 +119,8 @@ sub prepare_action {
 
     my $ret = $c->next::method(@_);
 
-    my $enc = $c->encoding;
-
     foreach (@{$c->req->arguments}, @{$c->req->captures}) {
-        $_ = Encode::is_utf8( $_ ) ? $_ : $enc->decode( $_, $CHECK );
+      $_ = $c->_handle_param_unicode_decoding($_);
     }
 
     return $ret;
@@ -127,6 +136,28 @@ sub setup {
     $self->encoding( $enc );
 
     return $self->next::method(@_);
+}
+
+sub _handle_param_unicode_decoding {
+    my ( $self, $value ) = @_;
+    my $enc = $self->encoding;
+    return try {
+        Encode::is_utf8( $value ) ?
+            $value
+        : $enc->decode( $value, $CHECK );
+    }
+    catch {
+        $self->handle_unicode_encoding_exception({
+            param_value => $value,
+            error_msg => $_,
+            encoding_step => 'params',
+        });
+    };
+}
+
+sub handle_unicode_encoding_exception {
+    my ( $self, $exception_ctx ) = @_;
+    die $exception_ctx->{error_msg};
 }
 
 1;
@@ -182,6 +213,36 @@ captures (i.e. C<< $c->request->captures >>).
 =item setup
 
 Setups C<< $c->encoding >> with encoding specified in C<< $c->config->{encoding} >>.
+
+=item handle_unicode_encoding_exception ($exception_context)
+
+Method called when decoding process for a request fails.
+
+An C<$exception_context> hashref is provided to allow you to override the
+behaviour of your application when given data with incorrect encodings.
+
+The default method throws exceptions in the case of invalid request parameters
+(resulting in a 500 error), but ignores errors in upload filenames.
+
+The keys passed in the C<$exception_context> hash are:
+
+=over
+
+=item param_value
+
+The value which was not able to be decoded.
+
+=item error_msg
+
+The exception recieved from L<Encode>.
+
+=item encoding_step
+
+What type of data was being decoded. Valid values are (currently)
+C<params> - for request parameters / arguments / captures
+and C<uploads> - for request upload filenames.
+
+=back
 
 =back
 
