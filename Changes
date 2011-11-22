@@ -1,5 +1,11 @@
 Revision history for Perl extension Catalyst::Plugin::Unicode::Encoding
 
+1.3 2011-11-22 19:38:00
+    - Correctly decode nested parameters (from Catalyst::Plugin::Params::Nested)
+    - Require Class::Data::Inheritable. RT#71674
+    - Require newer LWP version to avoid versions with unicode bugs.
+      RT#64427
+
 1.2 2011-09-07 21:19:00
     - Use a callback in failed decoding process so that the app has a chance
       to handle it nicely

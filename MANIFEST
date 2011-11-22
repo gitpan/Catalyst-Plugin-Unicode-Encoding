@@ -18,7 +18,10 @@ t/01use.t
 t/04live.t
 t/05config.t
 t/06request_decode.t
+t/07nested_params.t
 t/author/02pod.t
 t/author/03podcoverage.t
 t/lib/TestApp.pm
 t/lib/TestApp/Controller/Root.pm
+t/lib/TestApp2.pm
+t/lib/TestApp2/Controller/Root.pm

@@ -10,7 +10,7 @@ use Try::Tiny;
 use Encode 2.21 ();
 our $CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC;
 
-our $VERSION = '1.2';
+our $VERSION = '1.3';
 
 __PACKAGE__->mk_classdata('_encoding');
 
@@ -84,19 +84,12 @@ sub prepare_uploads {
 
     for my $key (qw/ parameters query_parameters body_parameters /) {
         for my $value ( values %{ $c->request->{$key} } ) {
-
-            # TODO: Hash support from the Params::Nested
-            if ( ref $value && ref $value ne 'ARRAY' ) {
-                next;
-            }
-            for ( ref($value) ? @{$value} : $value ) {
-                # N.B. Check if already a character string and if so do not try to double decode.
-                #      http://www.mail-archive.com/catalyst@lists.scsys.co.uk/msg02350.html
-                #      this avoids exception if we have already decoded content, and is _not_ the
-                #      same as not encoding on output which is bad news (as it does the wrong thing
-                #      for latin1 chars for example)..
-                $_ = $c->_handle_param_unicode_decoding($_);
-            }
+            # N.B. Check if already a character string and if so do not try to double decode.
+            #      http://www.mail-archive.com/catalyst@lists.scsys.co.uk/msg02350.html
+            #      this avoids exception if we have already decoded content, and is _not_ the
+            #      same as not encoding on output which is bad news (as it does the wrong thing
+            #      for latin1 chars for example)..
+            $value = $c->_handle_unicode_decoding($value);
         }
     }
     for my $value ( values %{ $c->request->uploads } ) {
@@ -136,6 +129,28 @@ sub setup {
     $self->encoding( $enc );
 
     return $self->next::method(@_);
+}
+
+sub _handle_unicode_decoding {
+    my ( $self, $value ) = @_;
+
+    return unless defined $value;
+
+    if ( ref $value eq 'ARRAY' ) {
+        foreach ( @$value ) {
+            $_ = $self->_handle_unicode_decoding($_);
+        }
+        return $value;
+    }
+    elsif ( ref $value eq 'HASH' ) {
+        foreach ( values %$value ) {
+            $_ = $self->_handle_unicode_decoding($_);
+        }
+        return $value;
+    }
+    else {
+        return $self->_handle_param_unicode_decoding($value);
+    }
 }
 
 sub _handle_param_unicode_decoding {
