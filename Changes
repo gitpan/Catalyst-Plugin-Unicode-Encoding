@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Plugin::Unicode::Encoding
 
+1.6 2012-05-05 14:18:00
+    - And another issue with the same regex. RT#75006
+
 1.5 2012-03-15 18:32:00
     - Fix issue with regex in last release. RT#75006
 
