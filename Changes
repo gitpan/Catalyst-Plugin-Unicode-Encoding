@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::Plugin::Unicode::Encoding
 
+1.7 2012-05-09 22:13:00
+   - Add proper tests for charset parsing issues.
+   - Fix all known charset parsing issues.
+
 1.6 2012-05-05 14:18:00
     - And another issue with the same regex. RT#75006
 

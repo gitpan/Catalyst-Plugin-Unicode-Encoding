@@ -7,10 +7,14 @@ __PACKAGE__->config(namespace => q{});
 
 use base 'Catalyst::Controller';
 
-# your actions replace this one
 sub main :Path('') { 
-    $_[1]->res->body('<h1>It works</h1>');
-    $_[1]->res->content_type('text/html');
+    my ($self, $ctx, $charset) = @_;
+    my $content_type = 'text/html';
+    if ($ctx->stash->{charset}) {
+        $content_type .= ";charset=" . $ctx->stash->{charset};
+    }
+    $ctx->res->body('<h1>It works</h1>');
+    $ctx->res->content_type($content_type);
 }
 
 sub unicode_no_enc :Local {
@@ -55,6 +59,12 @@ sub capture : Chained('/') CaptureArgs(1) {}
 
 sub decode_capture : Chained('capture') PathPart('') Args(0) {
     my ( $self, $c, $cap_arg ) = @_;
+    $c->forward('main');
+}
+
+sub capture_charset : Chained('/') Args(1) {
+    my ( $self, $c, $cap_arg ) = @_;
+    $c->stash(charset => $cap_arg);
     $c->forward('main');
 }
 
