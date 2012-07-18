@@ -10,7 +10,7 @@ use Try::Tiny;
 use Encode 2.21 ();
 our $CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC;
 
-our $VERSION = '1.7';
+our $VERSION = '1.8';
 
 __PACKAGE__->mk_classdata('_encoding');
 
@@ -57,7 +57,7 @@ sub finalize_headers {
       unless $c->response->content_type =~ /^text|xml$|javascript$/;
 
     if ($ct_enc && $ct_enc =~ /charset=([^;]*)/) {
-        if (uc($1) ne $enc->mime_name) {
+        if (uc($1) ne uc($enc->mime_name)) {
             $c->log->debug("Unicode::Encoding is set to encode in '" .
                            $enc->mime_name .
                            "', content type is '$1', not encoding ");

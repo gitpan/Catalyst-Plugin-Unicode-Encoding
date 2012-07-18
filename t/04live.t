@@ -81,5 +81,13 @@ is ($mech->response->header('Content-Type'), 'text/html; charset=UTF-8',
     is ($got, $exp, 'content octets are UTF-8');
 }
 
+{
+    $mech->get_ok('http://localhost/shift_jis', 'get shift_jis');
+    is ($mech->response->header('Content-Type'), 'text/plain; charset=Shift_JIS', 'Content-Type with charset');
+    my $exp = "\xE3\x81\xBB\xE3\x81\x92";
+    my $got = Encode::encode_utf8($mech->content);
+    is ($got, $exp, 'content octets are Shift_JIS');
+}
+
 done_testing;
 

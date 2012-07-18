@@ -6,7 +6,7 @@ all_from 'lib/Catalyst/Plugin/Unicode/Encoding.pm';
 
 requires 'Class::Data::Inheritable';
 requires 'Encode' => '2.21';
-requires 'Catalyst' => '5.80';
+requires 'Catalyst' => '5.90015'; # Will work with earlier, but 5.90014 had a test failing bug..
 requires 'LWP' => '5.837'; # LWP had unicode fail in 5.8.26
 requires 'URI' => '1.36';
 requires 'Try::Tiny';

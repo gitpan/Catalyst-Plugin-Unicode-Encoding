@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::Plugin::Unicode::Encoding
 
+1.8 2012-07-18 20:28:00
+   - Work correcly with Shift_JIS and other encodings whos names are not
+     upper case. RT#69677
+
 1.7 2012-05-09 22:13:00
    - Add proper tests for charset parsing issues.
    - Fix all known charset parsing issues.

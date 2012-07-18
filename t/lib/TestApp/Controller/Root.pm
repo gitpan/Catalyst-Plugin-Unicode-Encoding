@@ -68,4 +68,13 @@ sub capture_charset : Chained('/') Args(1) {
     $c->forward('main');
 }
 
+sub shift_jis :Local {
+    my ($self, $c) = @_;
+    my $data = "ほげ"; # hoge!
+    $c->response->body($data); # should be decoded
+    $c->res->content_type('text/plain; charset=Shift_JIS');
+    $c->encoding("Shift_JIS");
+}
+
 1;
+
