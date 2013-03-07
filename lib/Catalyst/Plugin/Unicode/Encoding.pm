@@ -10,7 +10,7 @@ use Try::Tiny;
 use Encode 2.21 ();
 our $CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC;
 
-our $VERSION = '1.8';
+our $VERSION = '1.9';
 
 __PACKAGE__->mk_classdata('_encoding');
 
